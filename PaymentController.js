@@ -11,8 +11,9 @@ app.controller('PaymentCtrl', function($scope, $http, $filter){
 		$scope.filterPay = false;
 		$scope.addPay = false;
 		$scope.payme = true;
-		$http.get('gingerPaymentApp/data/db.json').then(function(response){			
-			$scope.payments = response.data.payments;						
+		$http.get('http://localhost:3000/payments').then(function(response){			
+			$scope.payments = response.data;
+			console.log("$scope.payments :", $scope.payments);
 		});		
 	}
 	
@@ -22,13 +23,15 @@ app.controller('PaymentCtrl', function($scope, $http, $filter){
 		$scope.addPay = false;
 		$scope.promish = true;
 		$scope.merchants = [];
-		$http.get('gingerPaymentApp/data/db.json').then(function(response){			
-			$scope.payments = response.data.payments;			
+		$http.get('http://localhost:3000/payments').then(function(response){			
+			$scope.payments = response.data;			
 			angular.forEach($scope.payments, function(payment){
 				if(payment.merchant == "Ginger"){
 					$scope.merchants.push(payment);
 				}
 			});
+			console.log("$scope.payments :", $scope.payments);
+			console.log("$scope.merchants :", $scope.merchants);
 		});		
 	}
 	
@@ -38,9 +41,10 @@ app.controller('PaymentCtrl', function($scope, $http, $filter){
 		$scope.addPay = false;
 		$scope.filterPay = true;
 		
-		$http.get('gingerPaymentApp/data/db.json').then(function(response){
-			$scope.payments = response.data.payments;			
+		$http.get('http://localhost:3000/payments').then(function(response){
+			$scope.payments = response.data;			
 		});
+		console.log("$scope.payments :", $scope.payments);
 	}
 	
 	$scope.addPayment = function(){
@@ -69,7 +73,7 @@ app.controller('PaymentCtrl', function($scope, $http, $filter){
                 }
             }
 		
-		var res = $http.post('http://localhost:8080/data/', dataObj, config);
+		var res = $http.post('http://localhost:3000/payments', dataObj, config);
 		
 		res.success(function(data, status, headers, config) {			
 			$scope.message = data;
@@ -93,6 +97,17 @@ app.controller('PaymentCtrl', function($scope, $http, $filter){
 	}
 	
 	
-})
+}).filter("emptyToEnd", function () {
+    return function (array, key) {
+    	if(!angular.isArray(array)) return;
+        var present = array.filter(function (item) {
+            return item[key];
+        });
+        var empty = array.filter(function (item) {
+            return !item[key]
+        });
+        return present.concat(empty);
+    };
+});
 
 
