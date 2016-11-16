@@ -67,8 +67,9 @@
         </aside>
         <section>
             <div ng-show="payme">	
-			<table>			
-  				<tr ng-repeat="pay in payments | orderBy: '-amount' | limitTo: 20">
+			<table>	
+				
+  				<tr ng-repeat="pay in (payments | orderBy: '-amount' | emptyToEnd:'amount' | limitTo: 20)">
     				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.id }}</td>
     				<td ng-if="$even">{{ pay.id }}</td>
     				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.method }}</td>
@@ -139,6 +140,7 @@
 			
 			<div ng-show="addPay">
 				<form ng-submit="processForm()">
+					
 				<h2>Add New payment</h2>
         			 payment ID : <input type="text" name="id" ng-model="id"> <br/>
         			 payment method : <input type="text" name="method" ng-model="method"> <br/>
@@ -150,6 +152,8 @@
         			
         			<button type="submit" class="btn btn-primary">Submit</button>
     			</form>
+    			
+    			
     			<hr />
     			{{ message }}
 			</div>
