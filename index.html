@@ -1,12 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" ng-app= "Payment">
+<head >
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <title>Ginger Payments - Frontend Assignment</title>
     <link rel="shortcut icon" href="favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.min.css">
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400,600,300,700">
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    
+    <!-- AngularJS library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-resource.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.8/angular-filter.min.js"></script>
+	<script type="text/javascript" language="Javascript" src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.3.min.js"></script>
+	
+	
+	<!-- Application required java script-->	
+	<script src="gingerPaymentApp/js/PaymentController.js"></script>
+	
+    
     <!--Feel free to remove the style tag-->
     <style>
         body{
@@ -31,21 +47,113 @@
             height: auto;
             margin: 10px;
         }
+        table, td  {
+  			border: 1px solid grey;
+  			border-collapse: collapse;
+  			padding: 5px;
+}
     </style>
 </head>
-<body>
+<body ng-controller= "PaymentCtrl">
     <header>
         <h1>Assignment</h1>
     </header>
-    <main>
-        <aside>
-            <button>Callback</button>
-            <button>Promise</button>
-            <button>Filter Payment-Method</button>
-            <button>Add payment</button>
+   	<main>
+        <aside>       
+            <button ng-click= "paymentlist()">Callback</button>        
+            <button ng-click= "getPromise()">Promise</button>
+            <button ng-click= "getFilterPayment()">Filter Payment-Method</button>
+            <button ng-click= "addPayment()">Add payment</button>
         </aside>
         <section>
-            <div ng-view></div>
+            <div ng-show="payme">	
+			<table>			
+  				<tr ng-repeat="pay in payments | orderBy: '-amount' | limitTo: 20">
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.id }}</td>
+    				<td ng-if="$even">{{ pay.id }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.method }}</td>
+    				<td ng-if="$even">{{ pay.method }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.amount }}</td>
+    				<td ng-if="$even">{{ pay.amount }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.currency }}</td>
+    				<td ng-if="$even">{{ pay.currency }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.created }}</td>
+    				<td ng-if="$even">{{ pay.created }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.status }}</td>
+    				<td ng-if="$even">{{ pay.status }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.merchant }}</td>
+    				<td ng-if="$even">{{ pay.merchant }}</td>
+  				</tr> 				
+			</table>
+			</div>
+			<div ng-show="promish">
+			<table>			
+  				<tr ng-repeat="merchant in merchants | orderBy: '-amount'">
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ merchant.id }}</td>
+    				<td ng-if="$even">{{ merchant.id }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ merchant.method }}</td>
+    				<td ng-if="$even">{{ merchant.method }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ merchant.amount }}</td>
+    				<td ng-if="$even">{{ merchant.amount }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ merchant.currency }}</td>
+    				<td ng-if="$even">{{ merchant.currency }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ merchant.created }}</td>
+    				<td ng-if="$even">{{ merchant.created }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ merchant.status }}</td>
+    				<td ng-if="$even">{{ merchant.status }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ merchant.merchant }}</td>
+    				<td ng-if="$even">{{ merchant.merchant }}</td>
+  				</tr> 				
+			</table>
+			</div>
+			
+			<div ng-show="filterPay">
+			<div>
+			<p>Select a payment method from dropdown:</p>
+			<select ng-model="selectedMethod">
+      			<option ng-repeat="pay in payments | unique: 'method' ">{{pay.method}}</option>
+    		</select>
+    		<h3>List of payment with selected method: {{selectedMethod}}</h3>
+    		</div>
+    		<section>
+    		<table>
+    			<tr ng-repeat="pay in payments | filter: selectedMethod">
+     				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.id }}</td>
+    				<td ng-if="$even">{{ pay.id }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.method }}</td>
+    				<td ng-if="$even">{{ pay.method }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.amount }}</td>
+    				<td ng-if="$even">{{ pay.amount }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.currency }}</td>
+    				<td ng-if="$even">{{ pay.currency }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.created }}</td>
+    				<td ng-if="$even">{{ pay.created }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.status }}</td>
+    				<td ng-if="$even">{{ pay.status }}</td>
+    				<td ng-if="$odd" style="background-color:#f1f1f1">{{ pay.merchant }}</td>
+    				<td ng-if="$even">{{ pay.merchant }}</td>
+				</tr>
+			</table>
+    		</section>
+			</div>
+			
+			<div ng-show="addPay">
+				<form ng-submit="processForm()">
+				<h2>Add New payment</h2>
+        			 payment ID : <input type="text" name="id" ng-model="id"> <br/>
+        			 payment method : <input type="text" name="method" ng-model="method"> <br/>
+        			 payment amount: <input type="text" name="amount" ng-model="amount"> <br/>
+        			 payment currency: <input type="text" name="currency" ng-model="currency"> <br/>
+        			 payment created: <input type="text" name="created" ng-model="created"> <br/>
+        			 payment status: <input type="text" name="status" ng-model="status">  <br/>
+        			 payment merchant: <input type="text" name="merchant" ng-model="merchant">  <br/>
+        			
+        			<button type="submit" class="btn btn-primary">Submit</button>
+    			</form>
+    			<hr />
+    			{{ message }}
+			</div>
+						
         </section>
     </main>
 </body>
